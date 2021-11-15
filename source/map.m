@@ -1,7 +1,7 @@
 clc;
 clear;
 
-ptCloud = pcread('trashcan.ply');
+ptCloud = pcread('trashcan.ply');%Read Pointcloud
 
 figure(1);
 pcshow(ptCloud);
