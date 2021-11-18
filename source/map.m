@@ -16,6 +16,7 @@ referenceVector = [0,0,1];
 
 maxAngularDistance = 5;
 
+% Get point cloud without floor or cieling
 [model1,inlierIndices,outlierIndices] = pcfitplane(ptCloud,...
             maxDistance,referenceVector,maxAngularDistance);
 plane1 = select(ptCloud,inlierIndices);
@@ -29,6 +30,8 @@ figure(3);
 pcshow(remainPtCloud);
 title('Remaining Point Cloud');
 
+% Generate 3D occupancy grid of the remaining point cloud after floor and
+% ceiling removed
 indices = pcbin(remainPtCloud,[128 128 128]);
 
 occupancyGrid = cellfun(@(c) ~isempty(c), indices);
@@ -36,6 +39,8 @@ occupancyGrid = cellfun(@(c) ~isempty(c), indices);
 ViewPnl = uipanel(figure);
 volshow(occupancyGrid, 'Parent' ,ViewPnl);
 
+% Generate 2D Occupancy Grid/Density grid (same use case), flattening 3D
+% space into occupied and non-occupied cells
 indices = pcbin(remainPtCloud,[128 128 1]);
 
 densityGrid = cellfun(@(c) ~isempty(c),indices);
@@ -86,6 +91,7 @@ Connecting_Distance=8; %Avoid to high values Connecting_Distances for reasonable
 % Running PathFinder
 OptimalPath = ASTARPATH(StartX,StartY,OffsteMap,GoalRegister,Connecting_Distance)
 % End. 
+% Plot optimal path
 if size(OptimalPath,2)>1
 figure(10)
 imagesc((MAP))
@@ -99,4 +105,19 @@ else
      pause(1);
  h=msgbox('Sorry, No path exists to the Target!','warn');
  uiwait(h,5);
- end
+end
+
+% Visualize path on pointcloud
+[plane_bins,bins] = pcbin(plane1,[128 128 1]); % Generate density grid from floor
+
+% For each bin in the optimal path, take all the points in the
+% corresponding bin of the floor ponitcloud and turn them red
+for i = 1:length(OptimalPath)
+    bin = cell2mat(plane_bins(OptimalPath(i,1), OptimalPath(i,2)));
+    for j = 1:length(bin)
+       plane1.Color(bin(j),:) = [255,0,0];
+       plane1.Color(bin(j)+1,:) = [255,0,0];
+       plane1.Color(bin(j)-1,:) = [255,0,0];
+    end
+end
+pcshow(plane1);
