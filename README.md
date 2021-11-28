@@ -7,7 +7,7 @@ Provided a point cloud representation of a room (generated using a LiDAR scanner
 ### Current Architecture
 - Point Cloud generation as input
 - Points in point cloud are binned together in 3D space creating a 3D occupaancy grid
-- 2D occupancy is then generating using bins, creating a grid of 0s and 1s indicating whether a given area can be traverrsed.
+- 2D occupancy is then generating using bins, creating a grid of 0s and 1s indicating whether a given area can be traversed.
 - User selects start and end point
 - A* pathfinder is used to find a path along the 2D spaces that avoids occupied bins.
 - If a path is found, the 3D representation of the room is modified to show the path, coloring sets of points that are included in the path, and is presented back to the user.
