@@ -5,7 +5,6 @@
 % take the logical 'or' of the two grid and it will come out that the
 % obstacles and the missing areas are both considered as 1 and the
 % remaining 0 areas will be the areas that we could generate the path.
-
 %------------------------------------------------------------------------
 % obstacles in grid
 
@@ -16,7 +15,6 @@ grid1 = cellfun(@(c) ~isempty(c),indices);
 
 figure;
 imagesc(grid1);
-
 %------------------------------------------------------------------------
 % missing area in grid
 
@@ -27,7 +25,6 @@ grid2 = cellfun(@(c) isempty(c),index);
 
 figure;
 imagesc(grid2);
-
 %------------------------------------------------------------------------
 % take the logical or of the two grid
 
