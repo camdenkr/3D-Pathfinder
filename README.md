@@ -19,6 +19,18 @@ Provided a point cloud representation of a room (generated using a LiDAR scanner
 - Due in part to the above limitation, scan are limited to single floor spaces, and therefore cannot traverse stairs
 - As points are binned together, some resolution is lost when generating the path, and therefore the path loses some degree of accuracy when represented visually.
 
+### Current Architecture
+** **
+A* Search Algorithm picks the node according to a value - ‘f’ at each step which is a parameter equal to the sum of two other parameters – ‘g’ and ‘h’. At each step it picks the node/cell having the lowest ‘f’, and process that node/cell.
+
+g = the movement cost to move from the starting point to a given square on the grid, following the path generated to get there. 
+
+h = the estimated movement cost to move from that given square on the grid to the final destination. 
+
+In our program we use diagonal distance to initialize heuristic and use F=G+H to evaluate the cost of the path, smaller the F is, lower the cost.
+We also create two lists – Open List and Closed List. Open List is used to store the points which could be reached in next step, while Closed List is used to store the points that have already used before with lowest cost. Every time we will choose the lowest cost point in Open List as parent point and if the point has already existed in Close List or it is invalid(barrier), we will ignore it and continue. Once the ending point is existed in Open List, it will trace back all parent points to generate the shortest path.
+
+
 ### Repo organization
 ** **
 Currently all soource code to process point clouds is located in /source. Our main two files that are included in our current architecture are **map.m** which starts the program, and **ASTARPATH.m** which generates the 2D path, slightly modified from [Einar Ueland's code](https://github.com/EinarUeland/Astar-Algorithm).
