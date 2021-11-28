@@ -18,3 +18,6 @@ Provided a point cloud representation of a room (generated using a LiDAR scanner
 - Obstacles that may be stepped over are assumed to be completely blocking, therefore no path will made along an area that includes any obstacles above floor height whatsoever, regardless of how low they are. 
 - Due in part to the above limitation, scan are limited to single floor spaces, and therefore cannot traverse stairs
 - As points are binned together, some resolution is lost when generating the path, and therefore the path loses some degree of accuracy when represented visually.
+
+### Repo organization
+Currently all soource code to process point clouds is located in /source. Our main two files that are included in our current architecture are **map.m** which starts the program, and ASTARPATH.m which generates the 2D path, slightly modified from [Einar Ueland's code](https://github.com/EinarUeland/Astar-Algorithm).
