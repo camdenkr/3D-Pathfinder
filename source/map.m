@@ -21,7 +21,7 @@ maxAngularDistance = 5;
             maxDistance,referenceVector,maxAngularDistance);
 plane1 = select(ptCloud,inlierIndices);
 remainPtCloud = select(ptCloud,outlierIndices);
-
+[plane_bins,bins] = pcbin(plane1,[128 128 1]);
 figure(2);
 pcshow(plane1);
 title('Ground');
@@ -93,9 +93,6 @@ OptimalPath = ASTARPATH(StartX,StartY,OffsteMap,GoalRegister,Connecting_Distance
 % End. 
 % Plot optimal path
 if size(OptimalPath,2)>1
-figure(10)
-imagesc((MAP))
-    colormap(flipud(gray));
 hold on
 plot(OptimalPath(1,2),OptimalPath(1,1),'o','color','k')
 plot(OptimalPath(end,2),OptimalPath(end,1),'o','color','b')
@@ -107,8 +104,8 @@ else
  uiwait(h,5);
 end
 
-% Visualize path on pointcloud
-[plane_bins,bins] = pcbin(plane1,[128 128 1]); % Generate density grid from floor
+
+figure()
 
 % For each bin in the optimal path, take all the points in the
 % corresponding bin of the floor ponitcloud and turn them red
