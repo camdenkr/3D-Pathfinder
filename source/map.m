@@ -16,15 +16,24 @@ referenceVector = [0,0,1];
 
 maxAngularDistance = 5;
 
-% Get point cloud without floor or cieling
+% Get point cloud without floor or ceiling
 [model1,inlierIndices,outlierIndices] = pcfitplane(ptCloud,...
             maxDistance,referenceVector,maxAngularDistance);
 plane1 = select(ptCloud,inlierIndices);
 remainPtCloud = select(ptCloud,outlierIndices);
 [plane_bins,bins] = pcbin(plane1,[128 128 1]);
 figure(2);
+fig = figure(2);
 pcshow(plane1);
 title('Ground');
+
+% Assign custom update function to dcm
+dcm_obj = datacursormode(fig);
+xyz = zeros(2,3);
+for i = 1:2
+    set(dcm_obj,'SnapToDataVertex','off','Enable','on','UpdateFcn',@getClickedPoint);
+    xyz(i) = evalin("base",'clicked_point');
+end
 
 figure(3);
 pcshow(remainPtCloud);
