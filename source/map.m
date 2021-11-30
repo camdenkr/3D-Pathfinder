@@ -27,13 +27,18 @@ fig = figure(2);
 pcshow(plane1);
 title('Ground');
 
-% Assign custom update function to dcm
-dcm_obj = datacursormode(fig);
-xyz = zeros(2,3);
-for i = 1:2
-    set(dcm_obj,'SnapToDataVertex','off','Enable','on','UpdateFcn',@getClickedPoint);
-    xyz(i) = evalin("base",'clicked_point');
+%Get coordinates in pointcloud
+keydown = 2;
+while keydown ~= 0
+   disp('Click some where on the figure');
+   keydown = waitforbuttonpress;   
 end
+currPt = get(gca,'CurrentPoint');
+disp(currPt);
+hold on;
+plot3( currPt(:,1), currPt(:,2), currPt(:,3), 'k-', 'LineWidth', 2);
+view(-19,46);  %rotate to view this line
+xyz = evalin('base','currPt')
 
 figure(3);
 pcshow(remainPtCloud);
