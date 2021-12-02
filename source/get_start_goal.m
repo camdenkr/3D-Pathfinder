@@ -14,10 +14,10 @@ function [start_point,goal_point] = get_start_goal(ptCloud)
 
     figure();
     pcshow(ptCloud);
+    keydown = 2;
 
     % Get coordinates in pointcloud
     % Get first point by user input
-    keydown = 2;
     view(0,90); % Turn to BEV
     while keydown ~= 0
        disp('Click some where on the figure');
@@ -41,6 +41,7 @@ function [start_point,goal_point] = get_start_goal(ptCloud)
     
     x_lim = ptCloud.XLimits;
     y_lim = ptCloud.YLimits;
+    
     goal_point(1) = (xyz1(1,1) - x_lim(1))/(x_lim(2) - x_lim(1))*128;
     goal_point(2) = (xyz2(1,1) - x_lim(1))/(x_lim(2) - x_lim(1))*128;
     start_point(1) = (xyz1(1,2) - y_lim(1))/(y_lim(2) - y_lim(1))*128;

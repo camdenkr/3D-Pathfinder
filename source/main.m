@@ -63,7 +63,7 @@ Connecting_Distance=8; %Avoid to high values Connecting_Distances for reasonable
 StartX = start_point(1);
 StartY = goal_point(1);
 GoalRegister = int8(zeros(128,128));
-GoalRegister(start_point(2),goal_point(2))=1;
+GoalRegister(goal_point(2),start_point(2))=1;
 % Find Optimat Path using A* pathfinder algorithm
 OptimalPath = astar_pathfinder(StartX,StartY,MAP,GoalRegister,Connecting_Distance);
 
