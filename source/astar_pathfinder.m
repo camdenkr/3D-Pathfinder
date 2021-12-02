@@ -1,4 +1,4 @@
-function OptimalPath=ASTARPATH(StartX,StartY,MAP,GoalRegister,Connecting_Distance)
+function OptimalPath=astar_pathfinder(StartX,StartY,MAP,GoalRegister,Connecting_Distance)
 %Version 1.0
 % By Einar Ueland 2nd of May, 2016
 %FINDING ASTAR PATH IN AN OCCUPANCY GRID

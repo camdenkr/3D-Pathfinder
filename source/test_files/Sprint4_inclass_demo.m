@@ -1,7 +1,11 @@
 clc;
+close all;
 clear;
 
-ptCloud = pcread('trashcan.ply');%Read Pointcloud
+ptCloud = pcread('point_cloud.ply');
+zlimit = ptCloud.ZLimits;
+z1 = zlimit(1,1);
+z2 = zlimit(1,2);
 
 figure(1);
 pcshow(ptCloud);
@@ -10,57 +14,60 @@ ylabel('Y(m)');
 zlabel('Z(m)');
 title('Original Point Cloud');
 
-maxDistance = 0.02;
+maxDistance = 0.1;
 
 referenceVector = [0,0,1];
 
 maxAngularDistance = 5;
 
-% Get point cloud without floor or ceiling
 [model1,inlierIndices,outlierIndices] = pcfitplane(ptCloud,...
             maxDistance,referenceVector,maxAngularDistance);
 plane1 = select(ptCloud,inlierIndices);
-remainPtCloud = select(ptCloud,outlierIndices);
-[plane_bins,bins] = pcbin(plane1,[128 128 1]);
-figure(2);
-fig = figure(2);
-pcshow(plane1);
-title('Ground');
+remainPtCloud1 = select(ptCloud,outlierIndices);
 
-%Get coordinates in pointcloud
-keydown = 2;
-while keydown ~= 0
-   disp('Click some where on the figure');
-   keydown = waitforbuttonpress;   
-end
-currPt = get(gca,'CurrentPoint');
-disp(currPt);
-hold on;
-plot3( currPt(:,1), currPt(:,2), currPt(:,3), 'k-', 'LineWidth', 2);
-view(-19,46);  %rotate to view this line
-xyz = evalin('base','currPt')
+roi = [-inf,+inf;-inf,+inf;-inf,z1+0.5];
+sampleIndices = findPointsInROI(remainPtCloud1,roi);
+
+[model2,inlierIndices,outlierIndices] = pcfitplane(remainPtCloud1,...
+            maxDistance,'SampleIndices',sampleIndices);
+plane2 = select(remainPtCloud1,inlierIndices);
+remainPtCloud = select(remainPtCloud1,outlierIndices);
+[plane_bins,bins] = pcbin(remainPtCloud1,[128 128 1]);
+figure(2);
+pcshow(plane1);
 
 figure(3);
+pcshow(remainPtCloud1);
+
+figure(4);
+pcshow(plane2);
+
+figure(5);
 pcshow(remainPtCloud);
 title('Remaining Point Cloud');
 
-% Generate 3D occupancy grid of the remaining point cloud after floor and
-% ceiling removed
-indices = pcbin(remainPtCloud,[128 128 128]);
-
-occupancyGrid = cellfun(@(c) ~isempty(c), indices);
-
-ViewPnl = uipanel(figure);
-volshow(occupancyGrid, 'Parent' ,ViewPnl);
-
-% Generate 2D Occupancy Grid/Density grid (same use case), flattening 3D
-% space into occupied and non-occupied cells
+%%
 indices = pcbin(remainPtCloud,[128 128 1]);
 
-densityGrid = cellfun(@(c) ~isempty(c),indices);
+densitygrid = cellfun(@(c) ~isempty(c),indices);
+
+figure;
+imagesc(densitygrid);
+%%
+index = pcbin(plane2,[128 128 1]); % plane
+
+grid = cellfun(@(c) isempty(c),index);
+
+figure;
+imagesc(grid);
+
+%%
+densityGrid = densitygrid | grid;
 
 figure;
 imagesc(densityGrid);
+
+
 
 %Set up and get the cordinates of 2 points
 [x,y] = ginput(2);
@@ -77,18 +84,24 @@ Barrierpoint = [row,col];
 for i = 1:r
        m = Barrierpoint(i,1);
        n = Barrierpoint(i,2);
-       if (1 == m) && (1 < n) && (128 > n)
-           OffsteMap(m:m + 1,n - 1:n + 1) = ones(2,3);    
+       if (128 == n) && (128 == m) && (1 < n) && (1 < m)
+           OffsteMap(m - 1:m,n - 1:n) = ones(2,2);
+       elseif (128 > n) && (128 > m) && (1 == n) && (1 == m)
+           OffsteMap(m:m + 1,n:n + 1) = ones(2,2);
+       elseif (128 == n) || (128 == m) || (1 == n) || (1 == m)
+           continue;
+       elseif (1 == m) && (1 < n) && (128 > n)
+           OffsteMap(m:m + 1,n - 1:n + 1) = ones(2,3);
        elseif (1 == n) && (1 < m) && (128 > m)
            OffsteMap(m - 1:m + 1,n:n + 1) = ones(3,2);
        elseif (128 == m) && (128 > n)
            OffsteMap(m - 1:m,n - 1:n + 1) = ones(2,3);
        elseif (128 == n) && (128 > m)
-           OffsteMap(m - 1:m + 1,n - 1:n) = ones(3,2);    
-       elseif (128 == n) && (128 == m)
+           OffsteMap(m - 1:m + 1,n - 1:n) = ones(3,2);
+       elseif (128 == n) && (128 == m) && (1 == n) && (1 == m)
            OffsteMap(m - 1:m,n - 1:n + 1) = ones(2,2);
        elseif (1 == n) && (1 == m)
-           OffsteMap(m:m + 1,n:n + 1) = ones(2,2);    
+           OffsteMap(m:m + 1,n:n + 1) = ones(2,2);
        else
            OffsteMap(m - 1:m + 1,n - 1:n + 1) = ones(3,3);
        end
@@ -126,9 +139,11 @@ figure()
 for i = 1:length(OptimalPath)
     bin = cell2mat(plane_bins(OptimalPath(i,1), OptimalPath(i,2)));
     for j = 1:length(bin)
-       plane1.Color(bin(j),:) = [255,0,0];
-       plane1.Color(bin(j)+1,:) = [255,0,0];
-       plane1.Color(bin(j)-1,:) = [255,0,0];
+       remainPtCloud1.Color(bin(j),:) = [255,0,0];
+       remainPtCloud1.Color(bin(j)+1,:) = [255,0,0];
+       remainPtCloud1.Color(bin(j)-1,:) = [255,0,0];
     end
 end
-pcshow(plane1);
+pcshow(remainPtCloud1);
+
+

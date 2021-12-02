@@ -1,7 +1,7 @@
 clc;
 clear;
 
-ptCloud = pcread('classroom.ply');
+ptCloud = pcread('point_cloud.ply');
 limx = ptCloud.XLimits;
 limy = ptCloud.YLimits;
 zlimit = ptCloud.ZLimits;
