@@ -50,18 +50,20 @@ title("2D Occupancy Grid of Point Cloud")
 %% Generate Path
 
 % Get user input start and end points
-[start_cell,goal_cell] = ginput(2);
-% Round to get exact cell coordinates
-start_cell = int8(start_cell);
-goal_cell = int8(goal_cell);
+[start_point, goal_point] = get_start_goal(topless_ptCloud);
+
+% [start_cell,goal_cell] = ginput(2);
+% % Round to get exact cell coordinates
+% start_cell = int8(start_cell);
+% goal_cell = int8(goal_cell);
 
 MAP = add_offset(occ_grid);
 
 Connecting_Distance=8; %Avoid to high values Connecting_Distances for reasonable runtimes. 
-StartX = start_cell(1);
-StartY = goal_cell(1);
+StartX = start_point(1);
+StartY = goal_point(1);
 GoalRegister = int8(zeros(128,128));
-GoalRegister(goal_cell(2),start_cell(2))=1;
+GoalRegister(start_point(2),goal_point(2))=1;
 % Find Optimat Path using A* pathfinder algorithm
 OptimalPath = astar_pathfinder(StartX,StartY,MAP,GoalRegister,Connecting_Distance);
 
@@ -80,7 +82,7 @@ end
 hold off
 
 %% Visualize Path
-XY_track = polyfit_linear(OptimalPath);
+XY_track = supplement_path(OptimalPath);
 figure()
 ptCloud_with_path = visualize_path(topless_ptCloud, XY_track);
 pcshow(ptCloud_with_path)

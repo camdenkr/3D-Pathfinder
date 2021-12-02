@@ -1,4 +1,4 @@
-function [XY_track] = polyfit_linear(OptimalPath)
+function [XY_track] = supplement_path(OptimalPath)
 % OptimalPath (Y,X)
 % Find all the points on the Optimalpath
 XY_track = [];
