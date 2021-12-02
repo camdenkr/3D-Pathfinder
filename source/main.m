@@ -80,8 +80,9 @@ end
 hold off
 
 %% Visualize Path
+XY_track = polyfit_linear(OptimalPath);
 figure()
-ptCloud_with_path = visualize_path(topless_ptCloud, OptimalPath);
+ptCloud_with_path = visualize_path(topless_ptCloud, XY_track);
 pcshow(ptCloud_with_path)
 title("Point Cloud with Optimal Path")
 
