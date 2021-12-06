@@ -35,9 +35,9 @@ We also create two lists – Open List and Closed List. Open List is used to sto
 
 ### Repo organization
 ** **
-Currently all code can be found in /source, with all required files to run the code, except the input point cloud. /test_files contaains various scripts used for prototypes and debugging purposes. 
+Currently all code can be found in /source, with all required files to run the code, except the input point cloud.
 
-The code can be run simply by running main.m with a *.ply file in the same directory. The name of the file must be modified in main.m to take in the correct point cloud, with the default being "point_cloud.ply".
+The code can be run simply by running main.m with a *.ply file in the same directory. The name of the file must be modified in main.m to take in the correct point cloud, with the default being "point_cloud.ply". There is also a boolean value has_ceiling that must be set to true (as it is by default) is the scan of the room contains a ceiling.
 
 Toolboxes Required For Running:
 - Computer Vision Toolbox
