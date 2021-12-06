@@ -12,7 +12,7 @@ function [start_point,goal_point] = get_start_goal(ptCloud)
                      to cell coordinates in 2D grid
 %}
 
-    figure();
+    figure(2);
     pcshow(ptCloud);
     keydown = 2;
 
@@ -51,4 +51,6 @@ function [start_point,goal_point] = get_start_goal(ptCloud)
     start_point = int8(start_point);
     goal_point = int8(goal_point);
 
+    % Done selecting points, close the figure
+    close(figure(2));
 end
