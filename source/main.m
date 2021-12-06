@@ -3,15 +3,16 @@ clc;
 close all;
 clear;
 
-input = 'point_cloud.ply';
-
+input = 'trashcan.ply';
+% If the input ptCloud has ceiling or not
+hasCeiling = false;
 
 % Read in a point cloud image
 ptCloud = pcread(input);
 
 %% Prune Point Cloud
 % Display Input Point Cloud
-figure();
+subplot(2, 3, 1)
 pcshow(ptCloud);
 xlabel('X(m)');
 ylabel('Y(m)');
@@ -19,22 +20,24 @@ zlabel('Z(m)');
 title('Original Point Cloud');
 
 % Remove ceiling
-[topless_ptCloud, ceiling] = remove_ceiling(ptCloud);
-figure()
+[topless_ptCloud, ceiling] = remove_ceiling(ptCloud, hasCeiling);
+subplot(2, 3, 2)
 pcshow(topless_ptCloud)
 title('Point Cloud Without Ceiling')
 
 % Remove floor
 [remaining_ptCloud, floor] = remove_floor(topless_ptCloud);
-figure()
+subplot(2, 3, 3)
 pcshow(remaining_ptCloud)
 title('Remaining Point Cloud')
 
-figure()
+% Display ceiling
+subplot(2, 3, 4)
 pcshow(ceiling)
 title('Ceiling')
 
-figure()
+% Display floor
+subplot(2, 3, 5)
 pcshow(floor)
 title('Floor')
 
@@ -43,19 +46,10 @@ title('Floor')
 % Fill in unscanned space with occupied cells
 occ_grid = fill_unscanned(remaining_ptCloud, floor);
 
-figure()
-imagesc(occ_grid)
-title("2D Occupancy Grid of Point Cloud")
-
 %% Generate Path
 
 % Get user input start and end points
 [start_point, goal_point] = get_start_goal(topless_ptCloud);
-
-% [start_cell,goal_cell] = ginput(2);
-% % Round to get exact cell coordinates
-% start_cell = int8(start_cell);
-% goal_cell = int8(goal_cell);
 
 MAP = add_offset(occ_grid);
 
@@ -68,10 +62,15 @@ GoalRegister(goal_point(2),start_point(2))=1;
 OptimalPath = astar_pathfinder(StartX,StartY,MAP,GoalRegister,Connecting_Distance);
 
 %% Plot Optimal Path
+
+figure(2);
+imagesc(occ_grid)
+title("2D Occupancy Grid of Point Cloud")
+
 if size(OptimalPath,2)>1
 hold on
-plot(OptimalPath(1,2),OptimalPath(1,1),'o','color','k')
-plot(OptimalPath(end,2),OptimalPath(end,1),'o','color','b')
+plot(OptimalPath(1,2),OptimalPath(1,1),'o','color','g')
+plot(OptimalPath(end,2),OptimalPath(end,1),'o','color','r')
 plot(OptimalPath(:,2),OptimalPath(:,1),'r')
 legend('Goal','Start','Path')
 else 
@@ -83,9 +82,10 @@ hold off
 
 %% Visualize Path
 XY_track = supplement_path(OptimalPath);
-figure()
+figure(3)
 ptCloud_with_path = visualize_path(topless_ptCloud, XY_track);
 pcshow(ptCloud_with_path)
+view(0,90);
 title("Point Cloud with Optimal Path")
 
 
