@@ -41,3 +41,25 @@ The code can be run simply by running main.m with a *.ply file in the same direc
 
 Toolboxes Required For Running:
 - Computer Vision Toolbox
+
+### Example
+
+The following is an example using the corner of clasroom, with a ceiling and missing parts of the scan. The rest of the scan has many points aallowing for a more detailed path.
+
+#### Original point cloud + floor and ceiling pieces taken out:
+
+![figure1](./images/pc1_layout1.png)
+
+
+#### 2D Occupancy Grid Generaated for A* Search:
+
+![figure2](./images/pc1_occgrid1.png)
+
+
+
+#### 3D Point Cloud (w/out ceiling) with optimal path in red:
+
+![figure3](./images/pc1_path1.png)
+![figure4](./images/pc1_path2.png)
+![figure5](./images/pc1_path3.png)
+
