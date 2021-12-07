@@ -3,9 +3,9 @@ clc;
 close all;
 clear;
 
-input = 'trashcan.ply';
+input = 'point_cloud.ply';
 % If the input ptCloud has ceiling or not
-hasCeiling = false;
+hasCeiling = true;
 
 % Read in a point cloud image
 ptCloud = pcread(input);
